@@ -9,15 +9,19 @@ public class MoveToGoalAgent : Agent
 {
 
   [SerializeField] private Transform targetTransform;
+  [SerializeField] private Material winMaterial;
+  [SerializeField] private Material loseMaterial;
+  [SerializeField] private MeshRenderer floorMeshRenderer;
+
 
   public override void OnEpisodeBegin()
   {
-    transform.position = Vector3.zero;
+    transform.localPosition = Vector3.zero;
   }
   public override void CollectObservations(VectorSensor sensor)
   {
-    sensor.AddObservation(transform.position);
-    sensor.AddObservation(targetTransform.position);
+    sensor.AddObservation(transform.localPosition);
+    sensor.AddObservation(targetTransform.localPosition);
   }
   public override void OnActionReceived(ActionBuffers actions)
   {
@@ -25,7 +29,7 @@ public class MoveToGoalAgent : Agent
     float moveZ = actions.ContinuousActions[1];
 
     float moveSpeed = 1f;
-    transform.position += new Vector3(moveX, 0, moveZ) * Time.deltaTime * moveSpeed;
+    transform.localPosition += new Vector3(moveX, 0, moveZ) * Time.deltaTime * moveSpeed;
   }
 
   public override void Heuristic(in ActionBuffers actionsOut)
@@ -39,7 +43,8 @@ public class MoveToGoalAgent : Agent
     if (other.TryGetComponent<Goal>(out Goal goal))
     {
       // Use AddReward if the rewards should be accumulative. E.g. with a car driving-AI.
-      SetReward(1f);
+      SetReward(+1f);
+      floorMeshRenderer.material = winMaterial;
       EndEpisode();
 
     }
@@ -47,6 +52,7 @@ public class MoveToGoalAgent : Agent
     {
       // Use AddReward if the rewards should be accumulative. E.g. with a car driving-AI.
       SetReward(-1f);
+      floorMeshRenderer.material = loseMaterial;
       EndEpisode();
 
     }
