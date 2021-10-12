@@ -10,6 +10,10 @@ public class MoveToGoalAgent : Agent
 
   [SerializeField] private Transform targetTransform;
 
+  public override void OnEpisodeBegin()
+  {
+    transform.position = Vector3.zero;
+  }
   public override void CollectObservations(VectorSensor sensor)
   {
     sensor.AddObservation(transform.position);
@@ -24,8 +28,27 @@ public class MoveToGoalAgent : Agent
     transform.position += new Vector3(moveX, 0, moveZ) * Time.deltaTime * moveSpeed;
   }
 
-  private void OnTriggerEnter(Collider other) {
-    // Use AddReward if the rewards should be accumulative. E.g. with a car driving-AI.
-    SetReward(1f);
+  public override void Heuristic(in ActionBuffers actionsOut)
+  {
+    ActionSegment<float> continiousAction = actionsOut.ContinuousActions;
+    continiousAction[0] = Input.GetAxisRaw("Horizontal");
+    continiousAction[1] = Input.GetAxisRaw("Vertical");
+  }
+  private void OnTriggerEnter(Collider other)
+  {
+    if (other.TryGetComponent<Goal>(out Goal goal))
+    {
+      // Use AddReward if the rewards should be accumulative. E.g. with a car driving-AI.
+      SetReward(1f);
+      EndEpisode();
+
+    }
+    if (other.TryGetComponent<Wall>(out Wall wall))
+    {
+      // Use AddReward if the rewards should be accumulative. E.g. with a car driving-AI.
+      SetReward(-1f);
+      EndEpisode();
+
+    }
   }
 }
