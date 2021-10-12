@@ -2,7 +2,7 @@
 
 First test of Unity's ML-Agents Toolkit. Create a simple model for navigating from a random position to a target given the positions of both the agent and the target.
 
-![Header Image](https://github.com/github/assets/blob/assets/ML-AgentHeader.png)
+![Header Image](https://github.com/olestole/ml-agent/blob/assets/ML-AgentHeader.png)
 
 ## Getting Started
 
